@@ -1,0 +1,66 @@
+{
+  "name": "github-feedback-app",
+  "version": "1.0.0",
+  "description": "Github Feedback App",
+  "main": "server.js",
+  "type": "commonjs",
+  "devDependencies": {
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "prettier": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Yu-yu0202/GithubFeedbackApp.git"
+  },
+  "author": "Yu-yu0202",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/Yu-yu0202/GithubFeedbackApp/issues"
+  },
+  "homepage": "https://github.com/Yu-yu0202/GithubFeedbackApp#readme",
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "es2023": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "import"
+    ],
+    "rules": {
+      "no-console": "warn",
+      "no-unused-vars": "warn",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal"
+          ],
+          "newlines-between": "always"
+        }
+      ]
+    },
+    "ignorePatterns": [
+      "node_modules/",
+      "dist/",
+      "build/"
+    ]
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.0",
+    "dotenv": "^16.4.7"
+  }
+}
