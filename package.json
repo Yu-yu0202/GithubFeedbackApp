@@ -56,7 +56,8 @@
     "ignorePatterns": [
       "node_modules/",
       "dist/",
-      "build/"
+      "build/",
+      "src/*"
     ]
   },
   "dependencies": {
