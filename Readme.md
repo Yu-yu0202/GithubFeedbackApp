@@ -18,9 +18,13 @@ npm i
 touch .env
 nano .env
 ```
+.env:
 ```.env
 GITHUB_TOKEN = YOUR_GITHUB_TOKEN
 repo_info = Issueを作成したいリポジトリ(例:Yu-yu0202/GithubFeedbackApp)
 PRIVATE_KEY_PATH = Your_KEY_Path(ex: ./cert/privkey.key)
 CERTIFICATE_PATH = Your_CERT_Path(ex: ./cert/cert.pem)
 ```
+※先にSSL証明書を発行してください
+
+その後サーバーを起動します。
