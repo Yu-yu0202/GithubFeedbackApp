@@ -1,0 +1,37 @@
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>不具合報告フォーム</title>
+        <script src='./js/index.js' defer></script>
+    </head>
+    <body>
+        <h1>不具合報告、新機能提案フォーム</h1>
+        <div>このフォームでは、不具合の報告、新機能の提案を受け付けます。詳しくは<a href="javascript:console.log('まだ構成が完了していないようです。サイト管理者に問い合わせてください。')">こちら</a>をご覧ください。</div>
+        <form>
+            <table>
+                <tr>
+                    <th>報告する種類</th>
+                    <td>
+                        <select name="種類" id="type" required onchange="typeOnchange()">
+                            <option hidden value="">選択してください...</option>
+                            <option value="bug">バグ</option>
+                            <option value="suggestion">新機能の提案など</option>
+                            <option value="fatal">致命的なバグや脆弱性</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>タイトル</th>
+                    <td>
+                        <input name="タイトル" id="title" type="text" required>
+                    </td>
+                </tr>
+                <tr>
+                    <th>①バグの概要（分かりやすく要約してください）</th>
+                    <td><input name="本文" id="body" type="text" required></td>
+                </tr>
+
+            </table>
+        </form>
+    </body>
+</html>
