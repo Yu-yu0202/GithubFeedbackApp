@@ -10,6 +10,10 @@
     "eslint-plugin-import": "^2.26.0",
     "prettier": "^3.0.0"
   },
+  "dependencies": {
+    "@octokit/rest": "^21.1.0",
+    "dotenv": "^16.4.7"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/Yu-yu0202/GithubFeedbackApp.git"
@@ -59,9 +63,5 @@
       "build/",
       "src/*"
     ]
-  },
-  "dependencies": {
-    "@octokit/rest": "^21.1.0",
-    "dotenv": "^16.4.7"
   }
 }

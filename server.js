@@ -6,7 +6,7 @@ const cluster = require('cluster');
 const os = require('os');
 const { Octokit } = require('@octokit/rest');
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-const numCPUs = os.cpus().length;
+const numCPUs = os.cpus().length / 2;
 
 const repo_info = process.env.repo_info.split('/');
 const owner = repo_info[0];
@@ -48,7 +48,7 @@ if (cluster.isMaster) {
 					switch (Math.floor(response_code / 100)) {
 						case 2:
 							stream.respond({
-								'content-type': 'application/json',
+								'content-type': 'application/json; charset=utf-8',
 								':status': 201,
 								'Location': response.data.html_url
 							});
@@ -56,7 +56,7 @@ if (cluster.isMaster) {
 							return;
 						case 4:
 							stream.respond({
-								'content-type': 'application/json',
+								'content-type': 'application/json; charset=utf-8',
 								':status': 500
 							});
 							stream.end(JSON.stringify({ message: "NG", apistatus: "response_code" }))
@@ -64,15 +64,19 @@ if (cluster.isMaster) {
 					}
 				} catch (error) {
 					stream.respond({
-						'content-type': 'application/json',
+						'content-type': 'application/json; charset=utf-8',
 						':status': 500
 					});
 					stream.end(JSON.stringify({ message: "Unexpected error:" + error.message }));
 				}
 			});
-        } else if (headers[':method']) {
+        } else if (headers[':method'] === 'GET') {
             stream.on('end',async() => {
-                
+                stream.respond({
+					'content-type': 'text/html; charset=utf-8',
+					':status': 200
+				});
+				stream.end(fs.readFileSync('./src/html/index.html'));
             })
 		}
 	});
