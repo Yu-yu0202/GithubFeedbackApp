@@ -2,7 +2,8 @@
     <head>
         <meta charset="UTF-8"/>
         <title>不具合報告フォーム</title>
-        <script src='./js/index.js' defer></script>
+        <script src='./js/index.js' type="module" defer></script>
+        <link type="text/css" href="./css/index.css">
     </head>
     <body>
         <h1>不具合報告、新機能提案フォーム</h1>
@@ -13,7 +14,7 @@
                     <th>報告する種類</th>
                     <td>
                         <select name="種類" id="type" required onchange="typeOnchange()">
-                            <option hidden value="">選択してください...</option>
+                            <option hidden disabled value="default">選択してください...</option>
                             <option value="bug">バグ</option>
                             <option value="suggestion">新機能の提案など</option>
                             <option value="fatal">致命的なバグや脆弱性</option>
@@ -21,16 +22,37 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>タイトル</th>
+                    <th>①タイトル</th>
                     <td>
                         <input name="タイトル" id="title" type="text" required>
                     </td>
                 </tr>
                 <tr>
-                    <th>①バグの概要（分かりやすく要約してください）</th>
+                    <th>②概要（分かりやすく要約してください）</th>
+                    <td><input name="概要" id="overview" type="text" required></td>
+                </tr>
+                <tr>
+                    <th>③本文</th>
                     <td><input name="本文" id="body" type="text" required></td>
                 </tr>
-
+                <tr>
+                    <th>④環境</th>
+                    <td>
+                        <select name="OS" id="OS" required onchange="OSOnchange()">
+                            <option hidden disabled value="default">選択してください...</option>
+                            <option value="Windows11">Windows 11</option>
+                            <option value="Windows10">Windows 10</option>
+                            <option value="Linux">Linux(Linux-Based OSも含む)</option>
+                            <option value="Android">Android</option>
+                            <option value="iOS">iOS</option>
+                            <option value="Other">その他</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="OS-Other">
+                    <th>その他:</th>
+                    <td><input name="OS" id="OtherOS" type="text" required disabled></td>
+                </tr>
             </table>
         </form>
     </body>

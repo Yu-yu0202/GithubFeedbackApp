@@ -20,7 +20,7 @@ function log(Method,Location,IP,StatusCode) {
 function archiveLogFile() {
     const now = new Date();
     const timestamp = now.toISOString().replace(/T/, '-').replace(/:/g, '-').split('.')[0]; // YYYY-MM-DD-HH-MM
-    const archiveName = `logs-${timestamp}.tgz`;
+    const archiveName = `logs-${timestamp}.tar.gz`;
 
     console.log(`Archiving log file as ${archiveName}...`);
 
