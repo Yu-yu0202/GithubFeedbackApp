@@ -1,7 +1,4 @@
 import $ from "https://cdn.jsdelivr.net/npm/jquery@latest/+esm";
-function typeOnchange() {
-    
-}
 function OSOnchange() {
     if (document.getElementById('OS')) {
         var id = document.getElementById('OS').value();

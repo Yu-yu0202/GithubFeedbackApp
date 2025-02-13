@@ -9,11 +9,11 @@
         <h1>不具合報告、新機能提案フォーム</h1>
         <div>このフォームでは、不具合の報告、新機能の提案を受け付けます。詳しくは<a href="javascript:console.log('まだ構成が完了していないようです。サイト管理者に問い合わせてください。')">こちら</a>をご覧ください。</div>
         <form>
-            <table>
+            <table id="formtable">
                 <tr>
                     <th>報告する種類</th>
                     <td>
-                        <select name="種類" id="type" required onchange="typeOnchange()">
+                        <select name="種類" id="type" required>
                             <option hidden disabled value="default">選択してください...</option>
                             <option value="bug">バグ</option>
                             <option value="suggestion">新機能の提案など</option>
