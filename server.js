@@ -111,14 +111,23 @@ if (cluster.isMaster) {
 				}
 			});
         } else if (headers[':method'] === 'GET') {
-            stream.on('end',async() => {
-                stream.respond({
-					'content-type': 'text/html; charset=utf-8',
-					':status': 200
-				});
-				log(method,location,ip,200);
-				stream.end(fs.readFileSync('./src/html/index.html'));
-            })
+			fs.readFile('./src/index.html', (err, data) => {
+                if (err) {
+                    stream.respond({
+                        'content-type': 'text/plain; charset=utf-8',
+                        ':status': 500
+                    });
+                    stream.end("Internal Server Error");
+                    log(method, location, ip, 500);
+                } else {
+                    stream.respond({
+                        'content-type': 'text/html; charset=utf-8',
+                        ':status': 200
+                    });
+                    log(method, location, ip, 200);
+                    stream.end(data);
+                }
+            });
 		}
 	});
 
