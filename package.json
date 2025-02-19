@@ -5,13 +5,13 @@
   "main": "server.js",
   "type": "commonjs",
   "devDependencies": {
-    "eslint": "^9.20.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "prettier": "^3.0.0"
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "prettier": "^3.5.1"
   },
   "dependencies": {
-    "@octokit/rest": "^21.1.0",
+    "@octokit/rest": "^21.1.1",
     "dotenv": "^16.4.7"
   },
   "repository": {

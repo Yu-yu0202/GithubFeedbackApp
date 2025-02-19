@@ -6,9 +6,10 @@ const cluster = require('cluster');
 const os = require('os');
 const { Octokit } = require('@octokit/rest');
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-const numCPUs = os.cpus().length / 2;
+const numCPUs = process.env.WORKERS || os.cpus().length;
 const logStream = fs.createWriteStream("access.log", {flags:'a'});
 const { exec } = require("child_process");
+const path = require('path')
 
 const repo_info = process.env.repo_info.split('/');
 const owner = repo_info[0];
@@ -68,7 +69,7 @@ if (cluster.isMaster) {
 		let ip = stream.session.socket.remoteAddress;
 		if (headers[':method'] === 'PUT') {
 			let data = '';
-			server.on('data', chunk => {
+			stream.on('data', chunk => {
 				data += chunk;
 			});
 			stream.on('end', async () => {
@@ -106,32 +107,34 @@ if (cluster.isMaster) {
 						'content-type': 'application/json; charset=utf-8',
 						':status': 500
 					});
-					stream.end(JSON.stringify({ message: "Unexpected error:" + error.message }));
+					stream.end(JSON.stringify({ message: "Unexpected error" }));
 					log(method,location,ip,500);
+					console.error(`Octokit error: ${error.message}`, error.response?.data || error);
 				}
 			});
         } else if (headers[':method'] === 'GET') {
+			const filePath = path.resolve(__dirname, 'src', 'index.html');
 			fs.readFile('./src/index.html', (err, data) => {
-                if (err) {
-                    stream.respond({
-                        'content-type': 'text/plain; charset=utf-8',
-                        ':status': 500
-                    });
-                    stream.end("Internal Server Error");
-                    log(method, location, ip, 500);
-                } else {
-                    stream.respond({
-                        'content-type': 'text/html; charset=utf-8',
-                        ':status': 200
-                    });
-                    log(method, location, ip, 200);
-                    stream.end(data);
-                }
-            });
+    			if (err) {
+       				stream.respond({
+            			'content-type': 'text/plain; charset=utf-8',
+           				':status': 500
+      				});
+       				stream.end("Internal Server Error");
+        			log(method, location, ip, 500);
+    			} else {
+        			stream.respond({
+            			'content-type': 'text/html; charset=utf-8',
+            			':status': 200
+        			});
+        			stream.end(data);
+        			log(method, location, ip, 200);
+    			}
+			});
 		}
 	});
 
-	server.listen(8443, () => {
+	server.listen(443, () => {
 		console.log(`Worker ${process.pid} started`);
 	});
 }
