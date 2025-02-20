@@ -4,19 +4,19 @@ const http2 = require('http2');
 const fs = require('fs');
 const cluster = require('cluster');
 const os = require('os');
-const { Octokit } = require('@octokit/rest');
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const numCPUs = process.env.WORKERS || os.cpus().length;
 const logStream = fs.createWriteStream("access.log", {flags:'a'});
 const { exec } = require("child_process");
-const path = require('path')
+const path = require('path');
 
+const { Octokit } = require('@octokit/rest');
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const repo_info = process.env.repo_info.split('/');
 const owner = repo_info[0];
 const repo = repo_info[1];
-function log(Method,Location,IP,StatusCode) {
-	console.log(`[http] Access ${Method} ${Location} From ${IP}: ${StatusCode}\n`);
-	logStream.write(`[http] Access ${Method} ${Location} From ${IP}: ${StatusCode}\n`)
+
+function logToMaster(Method, Location, IP, StatusCode) {
+	process.send({ type: 'log', method: Method, location: Location, ip: IP, statusCode: StatusCode });
 }
 function archiveLogFile() {
     const now = new Date();
@@ -36,13 +36,17 @@ function archiveLogFile() {
 }
 process.on("SIGINT", () => {
     console.log("SIGINT received. Shutting down...");
-    archiveLogFile();
+    if (cluster.isMaster) {
+		archiveLogFile()
+	}
     process.exit(0);
 });
 
 process.on("SIGTERM", () => {
     console.log("SIGTERM received. Shutting down...");
-    archiveLogFile();
+    if (cluster.isMaster) {
+		archiveLogFile()
+	}
     process.exit(0);
 });
 
@@ -52,6 +56,14 @@ if (cluster.isMaster) {
 	for (let i = 0; i < numCPUs; i++) {
 		cluster.fork();
 		console.info(`Worker ${i} started`);
+
+		cluster.on('message', (worker, message) => {
+        	if (message.type === 'log') {
+            	const logMessage = `[http] Access ${message.method} ${message.location} From ${message.ip}: ${message.statusCode}\n`;
+            	console.log(logMessage);
+            	logStream.write(logMessage);
+        	}
+    	});
 	}
 
 	cluster.on('exit', (worker) => {
@@ -91,7 +103,7 @@ if (cluster.isMaster) {
 								'Location': response.data.html_url
 							});
 							stream.end(JSON.stringify({ message: "OK", URL: response.data.html_url }))
-							log(method,location,ip,201);
+							logToMaster(method,location,ip,201);
 							return;
 						case 4:
 							stream.respond({
@@ -99,7 +111,7 @@ if (cluster.isMaster) {
 								':status': 500
 							});
 							stream.end(JSON.stringify({ message: "NG", apistatus: "response_code" }))
-							log(method,location,ip,500);
+							logToMaster(method,location,ip,500);
 							return;
 					}
 				} catch (error) {
@@ -108,27 +120,27 @@ if (cluster.isMaster) {
 						':status': 500
 					});
 					stream.end(JSON.stringify({ message: "Unexpected error" }));
-					log(method,location,ip,500);
+					logToMaster(method,location,ip,500);
 					console.error(`Octokit error: ${error.message}`, error.response?.data || error);
 				}
 			});
         } else if (headers[':method'] === 'GET') {
 			const filePath = path.resolve(__dirname, 'src', 'index.html');
-			fs.readFile('./src/index.html', (err, data) => {
+			fs.readFile(filePath, (err, data) => {
     			if (err) {
        				stream.respond({
             			'content-type': 'text/plain; charset=utf-8',
            				':status': 500
       				});
        				stream.end("Internal Server Error");
-        			log(method, location, ip, 500);
+        			logToMaster(method, location, ip, 500);
     			} else {
         			stream.respond({
             			'content-type': 'text/html; charset=utf-8',
             			':status': 200
         			});
         			stream.end(data);
-        			log(method, location, ip, 200);
+        			logToMaster(method, location, ip, 200);
     			}
 			});
 		}
