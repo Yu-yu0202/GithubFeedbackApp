@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "sanitize-filename": "^1.6.3"
   },
   "repository": {
     "type": "git",
