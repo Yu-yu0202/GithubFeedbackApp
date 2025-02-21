@@ -8,8 +8,8 @@ const numCPUs = process.env.WORKERS || os.cpus().length;
 const logStream = fs.createWriteStream("access.log", {flags:'a'});
 const { exec } = require("child_process");
 const path = require('path');
-
 const sanitize = require('sanitize-filename');
+
 const { Octokit } = require('@octokit/rest');
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const repo_info = process.env.repo_info.split('/');
@@ -100,7 +100,6 @@ if (cluster.isMaster) {
         let location = headers[':path'];
         let ip = stream.session.socket.remoteAddress;
 
-        // パスをサニタイズしてPath Injectionを防止
         location = sanitize(location);
 
         if (headers[':method'] === 'PUT') {
@@ -149,7 +148,7 @@ if (cluster.isMaster) {
                 }
             });
         } else if (headers[':method'] === 'GET') {
-            const filePath = path.resolve(__dirname, 'src', location === '/' ? 'index.html' : location.substring(1));
+            const filePath = path.resolve(__dirname, 'src', location === '/' ? 'index.html' : location);
             fs.readFile(filePath, (err, data) => {
                 if (err) {
                     stream.respond({
@@ -159,7 +158,7 @@ if (cluster.isMaster) {
                     stream.end("Internal Server Error");
                     logToMaster(method, location, ip, 500, err.message);
                 } else {
-                    const contentType = filePath.endsWith('.js') ? 'application/javascript' : 'text/html';
+                    const contentType = filePath.endsWith('.js') ? 'application/javascript' : filePath.endsWith('.css') ? 'text/css' : 'text/html';
                     stream.respond({
                         'content-type': contentType + '; charset=utf-8',
                         ':status': 200
@@ -171,7 +170,7 @@ if (cluster.isMaster) {
         }
     });
 
-    server.listen(443, () => {
+    server.listen(8443, () => {
         console.log(`Worker ${process.pid} started`);
     });
 }
